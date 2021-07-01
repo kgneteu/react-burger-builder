@@ -16,9 +16,9 @@ const Modal = (props) => (
     </Fragment>
 );
 
-export default React.memo(Modal,
+export default  React.memo(Modal,
     (prevProps,
-     nextProps) => prevProps.show === nextProps.show);
+     nextProps) => prevProps.show === nextProps.show && prevProps.children === nextProps.children);
 
 Modal.propTypes = {
     show: PropTypes.bool,
