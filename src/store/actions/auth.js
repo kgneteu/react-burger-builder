@@ -1,5 +1,4 @@
 import * as actionTypes from "./actionTypes";
-import {purchaseBurgerFail, purchaseBurgerStart, purchaseBurgerSuccess} from "./order";
 import axios from "axios";
 
 export const authStart = () => {
@@ -18,11 +17,12 @@ export const authFail = (error) => {
 export const authSuccess = (authData) => {
     return {
         type: actionTypes.AUTH_SUCCESS,
-        authData: authData,
+        token: authData.idToken,
+        id: authData.localId,
     }
 }
 
-export const auth = (email, password, isSignUp=false) =>{
+export const auth = (email, password, isSignUp = false) => {
     return dispatch => {
         dispatch(authStart())
         const authData = {
@@ -31,17 +31,32 @@ export const auth = (email, password, isSignUp=false) =>{
             returnSecureToken: true,
         }
         let url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDi-2wgQZKlrLZIVsmSqLJcBUbOWJVPgFY';
-        if (isSignUp){
+        if (isSignUp) {
             url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDi-2wgQZKlrLZIVsmSqLJcBUbOWJVPgFY';
         }
         axios.post(url, authData)
             .then(response => {
                 console.log(response.data)
                 dispatch(authSuccess(response.data))
+                dispatch(checkAuthTimeout(response.data.expiresIn))
             })
             .catch(error => {
-                console.log(error)
-                dispatch(authFail(error))
+                console.log('AAAA', {error})
+                dispatch(authFail(error.response.data.error.message))
             });
+    }
+}
+
+export const logOut = () => {
+    return {
+        type: actionTypes.AUTH_LOGOUT
+    }
+}
+
+export const checkAuthTimeout = (expiresIn) => {
+    return dispatch => {
+        setTimeout(() => {
+            dispatch(logOut());
+        }, expiresIn * 1000)
     }
 }

@@ -8,7 +8,7 @@ import {applyMiddleware, combineReducers, compose, createStore} from "redux";
 import burgerBuilderReducer from "./store/reducers/burgerBuilder";
 import thunk from "redux-thunk";
 import orderReducer from "./store/reducers/order";
-import {authReducer} from "./store/reducers/auth";
+import authReducer from "./store/reducers/auth";
 
 
 

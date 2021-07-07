@@ -12,7 +12,7 @@ const Orders = (props) => {
 
     useEffect(() => {
         //setLoading(true);
-        props.fetchOrders();
+        props.fetchOrders(props.token);
     }, [])
 
     let orderList;
@@ -38,11 +38,12 @@ const mapStateToProps = state => {
     return {
         orders: state.order.orders,
         loading: state.order.loading,
+        token: state.auth.token,
     }
 }
 const mapDispatchToProps = dispatch => {
     return {
-        fetchOrders: ()=>dispatch(fetchOrders())
+        fetchOrders: (token)=>dispatch(fetchOrders(token))
     }
 }
 
