@@ -3,16 +3,16 @@ import Modal from "../../components/UI/Modal/Modal";
 
 const withErrorHandler = (WrappedComponent, axios) =>
     class extends React.Component {
+
         state = {
             error: null,
         }
 
-        
         modalClosedHandler = () => {
             this.setState({error: null});
         };
 
-        componentDidMount() {
+        componentWillMount() {
 
             this.reqInterceptor = axios.interceptors.request.use(req => {
                 this.setState({error: null});
@@ -32,9 +32,10 @@ const withErrorHandler = (WrappedComponent, axios) =>
             return (
                 <React.Fragment>
                     <Modal
-                        show={this.state.error !== null}
-                        modalClosed={this.modalClosedHandler}
-                    >{this.state.error ? this.state.error.message : null}</Modal>
+                        show={this.state.error !==null}
+                        modalClosed={this.modalClosedHandler}>
+                        {this.state.error ? this.state.error.message : null}
+                    </Modal>
                     <WrappedComponent {...this.props}/>
                 </React.Fragment>
             )

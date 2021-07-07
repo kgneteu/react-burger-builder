@@ -1,33 +1,37 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import CheckoutSummary from "../../components/Order/Checkout/CheckoutSummary";
-import {Route} from "react-router";
+import {Redirect, Route} from "react-router";
 import ContactData from "./ContactData/ContactData";
+import {connect} from "react-redux";
+
+
 
 const Checkout = (props) => {
-    let initState = {
-         meat: 0,
-         sald: 0,
-         bacon: 0,
-         cheese: 0,
-     }
+    // let initState = {
+    //      meat: 0,
+    //      sald: 0,
+    //      bacon: 0,
+    //      cheese: 0,
+    //  }
+    //
+    // const [ingredients, setIngredients] = useState(initState);
+    // const [price, setPrice] = useState(0);
+    //
 
-    const [ingredients, setIngredients] = useState(initState);
-    const [price, setPrice] = useState(0);
+    // useEffect(() => {
+    //     const query = new URLSearchParams(props.location.search);
+    //     const ingredients = {}
+    //     for (let param of query.entries()) {
+    //         if (param[0] === 'price') {
+    //             setPrice(param[1])
+    //         } else {
+    //             ingredients[param[0]] = param[1];
+    //         }
+    //
+    //     }
+    //     setIngredients(ingredients);
+    // }, []);
 
-
-    useEffect(() => {
-        const query = new URLSearchParams(props.location.search);
-        const ingredients = {}
-        for (let param of query.entries()) {
-            if (param[0] === 'price') {
-                setPrice(param[1])
-            } else {
-                ingredients[param[0]] = param[1];
-            }
-
-        }
-        setIngredients(ingredients);
-    }, []);
 
 
     let checkoutCancelledHandler = () => {
@@ -38,19 +42,33 @@ const Checkout = (props) => {
         props.history.replace('/checkout/contact-data')
     };
 
+    let checkoutSummary=<Redirect to={'/'}/>
+    if (props.ingredients && !props.purchased){
+        checkoutSummary=(<CheckoutSummary
+            ingredients={props.ingredients}
+            checkoutContinued={checkoutContinuedHandler}
+            checkoutCancelled={checkoutCancelledHandler}
+        />)
+    }
     return (
         <div>
-            <CheckoutSummary
-                ingredients={ingredients}
-                checkoutContinued={checkoutContinuedHandler}
-                checkoutCancelled={checkoutCancelledHandler}
-            />
+            {checkoutSummary}
             <Route path={props.match.path + '/contact-data'}
-                   render={() => (<ContactData ingredients={ingredients} price={price}/>)}
+                   // render={() => (<ContactData ingredients={props.ingredients} price={props.price}/>)}
+                component={ContactData}
             />
         </div>
 
     )
 }
 
-export default Checkout;
+const mapStateToProps = (state) => {
+    return {
+        ingredients: state.burgerBuilder.ingredients,
+        price: state.burgerBuilder.totalPrice,
+        purchased: state.order.purchased
+    }
+}
+
+
+export default connect(mapStateToProps)(Checkout);

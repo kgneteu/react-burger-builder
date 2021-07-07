@@ -5,10 +5,13 @@ import Button from "../../../components/UI/Button/Button";
 import axios from "../../../axios";
 import {withRouter} from "react-router";
 import Input from "../../../components/UI/Input/Input";
+import {connect} from "react-redux";
+import withErrorHandler from "../../../hoc/withErrorHandler/withErrorHandler";
+import * as actionTypes from './../../../store/actions'
 
 const ContactData = (props) => {
     const initOrderForm = {
-        orderForm: {
+        name: {
 
             elementType: 'input',
             elementConfig: {
@@ -90,7 +93,6 @@ const ContactData = (props) => {
         },
     }
     let [orderForm, setOrderForm] = useState(initOrderForm)
-    let [loading, setLoading] = useState(false)
     let [formIsValid, setFormIsValid] = useState(false);
 
     const checkValidity = (value, rules) => {
@@ -112,7 +114,7 @@ const ContactData = (props) => {
 
     const orderHandler = (event) => {
         event.preventDefault();
-        setLoading(true);
+        //setLoading(true);
         const formData = {};
         for (let formElementId in orderForm) {
             formData[formElementId] = orderForm[formElementId].value;
@@ -122,16 +124,20 @@ const ContactData = (props) => {
             price: props.price,
             orderData: formData,
         }
-        console.log(order)
-        axios.post('/orders.json', order)
-            .then(response => {
-                setLoading(false);
-                console.log('order saved', props)
-                props.history.push('/');
-            })
-            .catch(error => {
-                setLoading(false);
-            });
+
+        props.onBurgerOrdered(order)
+
+
+
+        // axios.post('/orders.json', order)
+        //     .then(response => {
+        //         setLoading(false);
+        //         console.log('order saved', props)
+        //         props.history.push('/');
+        //     })
+        //     .catch(error => {
+        //         setLoading(false);
+        //     });
     }
 
     let formElementsArray = [];
@@ -182,7 +188,7 @@ const ContactData = (props) => {
             <Button disabled={!formIsValid} btnType="Success">ORDER</Button>
         </form>
     </div>);
-    if (loading) {
+    if (props.loading) {
         form = <Spinner/>;
     }
     return (
@@ -193,4 +199,19 @@ const ContactData = (props) => {
     );
 };
 
-export default withRouter(ContactData);
+const mapStateToProps = (state) => {
+    return {
+        ingredients: state.burgerBuilder.ingredients,
+        price: state.burgerBuilder.totalPrice,
+        loading: state.order.loading,
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onBurgerOrdered: (order)=>dispatch(actionTypes.purchaseBurger(order)),
+        onPurchaseBurgerStart: ()=>dispatch(actionTypes.purchaseBurgerStart()),
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(withRouter(withErrorHandler(ContactData,axios)));

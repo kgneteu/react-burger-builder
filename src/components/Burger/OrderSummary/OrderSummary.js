@@ -1,6 +1,7 @@
 import {Fragment, React} from 'react';
 import Button from "../../UI/Button/Button";
 import PropTypes from "prop-types";
+import {connect} from "react-redux";
 
 const OrderSummary = props => {
 
@@ -16,7 +17,7 @@ const OrderSummary = props => {
             <h3>Your Order</h3>
             <p>A delicious burger with the following ingredients:</p>
             <ul>{ingredientSummary}</ul>
-            <p><strong>Total Price: {props.totalPrice.toFixed(2)}</strong></p>
+            <p><strong>Total Price: {props.price.toFixed(2)}</strong></p>
             <p>Continue to Checkout?</p>
             <Button btnType={'Danger'} clicked={props.purchaseCanceled}>CANCEL</Button>
             <Button btnType={'Success'} clicked={props.purchaseContinued}>CONTINUE</Button>
@@ -24,10 +25,17 @@ const OrderSummary = props => {
     );
 };
 
-export default OrderSummary;
+const mapStateToProps = (state) => {
+    return {
+        ingredients: state.burgerBuilder.ingredients,
+        price: state.burgerBuilder.totalPrice,
+    }
+}
+
+export default connect(mapStateToProps)(OrderSummary);
 
 OrderSummary.propTypes={
-    totalPrice: PropTypes.number.isRequired,
+    price: PropTypes.number.isRequired,
     purchaseCanceled: PropTypes.func.isRequired,
     purchaseContinued: PropTypes.func.isRequired,
     ingredients: PropTypes.object.isRequired,

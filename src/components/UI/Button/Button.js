@@ -19,6 +19,6 @@ export default Button;
 Button.propTypes = {
     btnType: PropTypes.string,
     clicked: PropTypes.func,
-    disabled: PropTypes.string
+    disabled: PropTypes.bool
 };
 
