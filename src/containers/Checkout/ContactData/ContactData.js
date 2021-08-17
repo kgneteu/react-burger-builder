@@ -8,6 +8,7 @@ import Input from "../../../components/UI/Input/Input";
 import {connect} from "react-redux";
 import withErrorHandler from "../../../hoc/withErrorHandler/withErrorHandler";
 import * as actionTypes from './../../../store/actions'
+import checkValidity from "../../../shared/utility";
 
 const ContactData = (props) => {
     const initOrderForm = {
@@ -95,23 +96,6 @@ const ContactData = (props) => {
     let [orderForm, setOrderForm] = useState(initOrderForm)
     let [formIsValid, setFormIsValid] = useState(false);
 
-    const checkValidity = (value, rules) => {
-        let isValid = true;
-        if (rules) {
-            if (rules.required) {
-                isValid = value.trim() !== '' && isValid;
-            }
-            if (rules.maxLength) {
-                isValid = value.trim().length <= rules.maxLength && isValid;
-            }
-
-            if (rules.minLength) {
-                isValid = value.trim().length >= rules.minLength && isValid;
-            }
-        }
-        return isValid;
-    };
-
     const orderHandler = (event) => {
         event.preventDefault();
         //setLoading(true);
@@ -123,6 +107,7 @@ const ContactData = (props) => {
             ingredients: props.ingredients,
             price: props.price,
             orderData: formData,
+            userId: props.userId,
         }
 
         props.onBurgerOrdered(order, props.token)
@@ -205,6 +190,7 @@ const mapStateToProps = (state) => {
         price: state.burgerBuilder.totalPrice,
         loading: state.order.loading,
         token: state.auth.token,
+        userId: state.auth.userId,
     }
 }
 

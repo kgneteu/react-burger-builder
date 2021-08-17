@@ -21,7 +21,9 @@ const BuildControls = (props) => {
                               removeIngredient={props.removeIngredient}
                               addIngredient={props.addIngredient}/>
             ))}
-            <button disabled={!props.purchasable} onClick={props.ordered} className={classes.OrderButton}>ORDER NOW</button>
+            <button disabled={!props.purchasable}
+                    onClick={props.ordered}
+                    className={classes.OrderButton}>{props.userId?'ORDER NOW':'SIGN UP TO ORDER'}</button>
         </div>
     );
 };

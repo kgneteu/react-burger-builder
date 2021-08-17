@@ -1,10 +1,12 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Input from "../../components/UI/Input/Input";
 import Button from "../../components/UI/Button/Button";
 import classes from "./Auth.module.css";
 import {connect} from "react-redux";
 import Spinner from "../../components/UI/Spinner/Spinner";
-import {auth} from "../../store/actions/index";
+import {auth, setAuthRedirect} from "../../store/actions/index";
+import {Redirect} from "react-router";
+import checkValidity from "../../shared/utility";
 
 const Auth = (props) => {
     const initForm = {
@@ -39,6 +41,22 @@ const Auth = (props) => {
         },
     }
 
+    let [authForm, setAuthForm] = useState(initForm)
+    let [formIsValid, setFormIsValid] = useState(false);
+    let [isSignup, setIsSignup] = useState(false);
+
+    useEffect(() => {
+
+        let shouldResetRedirect =(!props.location.search)||(!props.building);
+        if ((shouldResetRedirect)&&(props.authRedirectPath !=='/')) {
+            props.onAuthSetRedirectPath('/');
+        }
+    }, [props.location.search]);
+
+
+    if (props.userId) return <Redirect to={props.authRedirectPath}/>
+
+
     const inputChangedHandler = (event, inputId) => {
         const changedAuthForm = {...authForm}
         const updatedElement = {...changedAuthForm[inputId]}
@@ -55,37 +73,6 @@ const Auth = (props) => {
         }
         setFormIsValid(formIsValid);
     };
-
-    const checkValidity = (value, rules) => {
-        let isValid = true;
-        if (rules) {
-            if (rules.required) {
-                isValid = value.trim() !== '' && isValid;
-            }
-            if (rules.maxLength) {
-                isValid = value.trim().length <= rules.maxLength && isValid;
-            }
-
-            if (rules.minLength) {
-                isValid = value.trim().length >= rules.minLength && isValid;
-            }
-            if (rules.isEmail) {
-                const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-                isValid = pattern.test(value) && isValid
-            }
-
-            if (rules.isNumeric) {
-                const pattern = /^\d+$/;
-                isValid = pattern.test(value) && isValid
-            }
-
-        }
-        return isValid;
-    };
-
-    let [authForm, setAuthForm] = useState(initForm)
-    let [formIsValid, setFormIsValid] = useState(false);
-    let [isSignup, setIsSignup] = useState(false);
 
 
     let formElementsArray = [];
@@ -111,8 +98,8 @@ const Auth = (props) => {
         setIsSignup(!isSignup);
     };
 
-    let error=null;
-    if (props.error){
+    let error = null;
+    if (props.error) {
         error = (<p>{props.error}</p>)
     }
     let form;
@@ -150,12 +137,17 @@ const mapStateToProps = state => {
     return {
         loading: state.auth.loading,
         error: state.auth.error,
+        userId: state.auth.userId,
+        building: state.burgerBuilder.building,
+        authRedirectPath: state.auth.authRedirectPath
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        onAuth: (email, password, isSignUp = false) => dispatch(auth(email, password, isSignUp))
+        onAuth: (email, password, isSignUp = false) => dispatch(auth(email, password, isSignUp)),
+        onAuthSetRedirectPath: (path) => dispatch(setAuthRedirect(path))
+
     }
 }
 

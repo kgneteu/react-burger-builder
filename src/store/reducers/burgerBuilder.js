@@ -10,6 +10,7 @@ const initialState = {
     ingredients: null,
     totalPrice: 4,
     error: false,
+    building: false,
 }
 
 const INGREDIENT_PRICES = {
@@ -27,9 +28,11 @@ const burgerBuilderReducer = (state = initialState, action) => {
                 ...state,
                 ingredients: {
                     ...state.ingredients,
-                    [action.ingredientName]: state.ingredients[action.ingredientName] + 1
+                    [action.ingredientName]: state.ingredients[action.ingredientName] + 1,
+
                 },
                 totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientName],
+                building: true,
             }
         }
         case actionTypes.REMOVE_INGREDIENT:
@@ -37,15 +40,17 @@ const burgerBuilderReducer = (state = initialState, action) => {
                 ...state,
                 ingredients: {
                     ...state.ingredients,
-                    [action.ingredientName]: state.ingredients[action.ingredientName] - 1
+                    [action.ingredientName]: state.ingredients[action.ingredientName] - 1,
+
                 },
                 totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientName],
+                building: true,
             }
         case actionTypes.SET_INGREDIENTS:
-        case actionTypes.ADD_INGREDIENTS:{
+        case actionTypes.ADD_INGREDIENTS: {
             const updatedState = {...state};
             //set custom order of ingredients
-            updatedState.ingredients={
+            updatedState.ingredients = {
                 salad: action.ingredients.salad,
                 bacon: action.ingredients.bacon,
                 cheese: action.ingredients.cheese,
@@ -56,10 +61,11 @@ const burgerBuilderReducer = (state = initialState, action) => {
                 updatedPrice += updatedState.ingredients[key] * INGREDIENT_PRICES[key];
             }
             updatedState.totalPrice = updatedPrice;
+            updatedState.building = false;
             return updatedState;
 
         }
-        case actionTypes.FETCH_INGREDIENTS_FAILED:{
+        case actionTypes.FETCH_INGREDIENTS_FAILED: {
             return {
                 ...state,
                 error: true,

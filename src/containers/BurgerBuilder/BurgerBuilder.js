@@ -9,7 +9,7 @@ import WithErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import {connect} from "react-redux";
 
 import * as burgerBuilderActions from "../../store/actions/";
-import {purchaseInit} from "../../store/actions/";
+import {purchaseInit, setAuthRedirect} from "../../store/actions/";
 
 
 class BurgerBuilder extends Component {
@@ -42,12 +42,19 @@ class BurgerBuilder extends Component {
         //  })
         //method 2
         //see BurgerBuilder actions
-        this.props.onInitIngredients();
+        if (!this.props.building){
+            this.props.onInitIngredients();
+        }
     }
 
 
     purchaseHandler = () => {
-        this.setState({purchasing: true})
+        if (this.props.userId) {
+            this.setState({purchasing: true})
+        } else {
+            this.props.onSetRedirectPath('/checkout')
+            this.props.history.push('/login?building=true');
+        }
     }
 
     purchaseCancelHandler = () => {
@@ -68,10 +75,12 @@ class BurgerBuilder extends Component {
         //     search: queryString,
         // });
         //redux now
+
         this.props.onInitPurchase();
         this.props.history.push({
             pathname: '/checkout',
         });
+
     }
 
     // updatePurchaseState = () => {
@@ -111,7 +120,6 @@ class BurgerBuilder extends Component {
     // }
 
     render() {
-        console.log(this.props)
         const disabledInfo = {...this.props.ingredients}
         for (const key in disabledInfo) {
             disabledInfo[key] = disabledInfo[key] < 1;
@@ -131,7 +139,6 @@ class BurgerBuilder extends Component {
         }
 
 
-
         let burger = null;
         if (!this.props.ingredients) {
             burger = this.props.error ? <p>Cannot load ingredients</p> : <Spinner/>
@@ -140,6 +147,7 @@ class BurgerBuilder extends Component {
                 <React.Fragment>
                     <Burger ingredients={this.props.ingredients}/>
                     <BuildControls
+                        userId={this.props.userId}
                         price={this.props.price}
                         purchasable={this.updatePurchaseState()}
                         disabledInfo={disabledInfo}
@@ -184,6 +192,8 @@ const mapStateToProps = (state) => {
         ingredients: state.burgerBuilder.ingredients,
         price: state.burgerBuilder.totalPrice,
         error: state.burgerBuilder.error,
+        userId: state.auth.userId,
+        building: state.burgerBuilder.building,
     }
 }
 
@@ -192,8 +202,9 @@ const mapDispatchToProps = (dispatch) => {
         onIngredientAdded: (ingredientName) => dispatch(burgerBuilderActions.addIngredient(ingredientName)),
         onIngredientRemoved: (ingredientName) => dispatch(burgerBuilderActions.removeIngredient(ingredientName)),
         onAddIngredients: (ingredients) => dispatch(burgerBuilderActions.addIngredients(ingredients)),
-        onInitIngredients: ()=> dispatch(burgerBuilderActions.initIngredients()),
-        onInitPurchase: ()=>dispatch(purchaseInit())
+        onInitIngredients: () => dispatch(burgerBuilderActions.initIngredients()),
+        onInitPurchase: () => dispatch(purchaseInit()),
+        onSetRedirectPath: (path) => dispatch(setAuthRedirect(path))
     }
 }
 

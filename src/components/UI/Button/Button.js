@@ -3,7 +3,7 @@ import classes from "./Button.module.css";
 import PropTypes from "prop-types";
 
 const Button = (props) => {
-    const disabled = !props.disabled ? 'disabled' : null;
+    //const disabled = !props.disabled ? 'disabled' : null;
     return (
         <button
             className={[classes.Button, classes[props.btnType]].join(' ')}

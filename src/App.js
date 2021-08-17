@@ -1,22 +1,22 @@
 import './App.css';
 import Layout from "./containers/Layout/Layout";
 import BurgerBuilder from "./containers/BurgerBuilder/BurgerBuilder";
-import Checkout from "./containers/Checkout/Checkout";
 import {Route, Switch} from "react-router";
 import {BrowserRouter} from "react-router-dom";
-import Orders from "./containers/Orders/Orders";
 import Auth from "./containers/Auth/Auth";
-import {spring} from "react-router-transition";
+import Logout from "./containers/Auth/Logout/Logout";
+import {connect} from "react-redux";
+import {authCheckState} from "./store/actions";
+import {lazy, Suspense, useEffect} from "react";
+import asyncComponent from "./hoc/asyncComponent/asyncComponent";
 
+const asyncCheckout = asyncComponent(() => import('./containers/Checkout/Checkout'))
+const asyncOrders = lazy(() => import('./containers/Orders/Orders'))
 
-function App() {
-    // wrap the `spring` helper to use a bouncy config
-    function bounce(val) {
-        return spring(val, {
-            stiffness: 330,
-            damping: 22,
-        });
-    }
+function App(props) {
+    useEffect(() => {
+        props.onCheckAuthState()
+    }, [])
 
     return (
         <div className="App">
@@ -39,9 +39,13 @@ function App() {
                     {/*>*/}
                     <Switch>
                         <Route path={'/'} component={BurgerBuilder} exact/>
-                        <Route path={'/checkout'} component={Checkout}/>
-                        <Route path={'/orders'} component={Orders}/>
+                        {props.userId && <Route path={'/checkout'} component={asyncCheckout}/>}
+                        <Suspense>
+                            {props.userId && <Route path={'/orders'} component={asyncOrders}/>}
+                        </Suspense>
                         <Route path={'/login'} component={Auth}/>
+                        {props.userId && <Route path={'/logout'} component={Logout}/>}
+                        <Route path={'/'} render={() => <h1 align={'center'}>Page not found !</h1>}/>
                     </Switch>
                     {/*</AnimatedSwitch>*/}
                 </Layout>
@@ -50,4 +54,12 @@ function App() {
     );
 }
 
-export default App;
+const mapStateToProps = state => {
+    return {userId: state.auth.userId,}
+}
+const mapDispatchToProps = dispatch => {
+    return {
+        onCheckAuthState: () => dispatch(authCheckState()),
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(App);
