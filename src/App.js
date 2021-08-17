@@ -7,11 +7,11 @@ import Auth from "./containers/Auth/Auth";
 import Logout from "./containers/Auth/Logout/Logout";
 import {connect} from "react-redux";
 import {authCheckState} from "./store/actions";
-import {lazy, Suspense, useEffect} from "react";
+import {useEffect} from "react";
 import asyncComponent from "./hoc/asyncComponent/asyncComponent";
 
 const asyncCheckout = asyncComponent(() => import('./containers/Checkout/Checkout'))
-const asyncOrders = lazy(() => import('./containers/Orders/Orders'))
+const asyncOrders = asyncComponent(() => import('./containers/Orders/Orders'))
 
 function App(props) {
     useEffect(() => {
@@ -40,9 +40,7 @@ function App(props) {
                     <Switch>
                         <Route path={'/'} component={BurgerBuilder} exact/>
                         {props.userId && <Route path={'/checkout'} component={asyncCheckout}/>}
-                        <Suspense>
-                            {props.userId && <Route path={'/orders'} component={asyncOrders}/>}
-                        </Suspense>
+                        {props.userId && <Route path={'/orders'} component={asyncOrders}/>}
                         <Route path={'/login'} component={Auth}/>
                         {props.userId && <Route path={'/logout'} component={Logout}/>}
                         <Route path={'/'} render={() => <h1 align={'center'}>Page not found !</h1>}/>
