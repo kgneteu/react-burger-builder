@@ -6,14 +6,13 @@ import Spinner from "../../components/UI/Spinner/Spinner";
 import {connect} from "react-redux";
 import {fetchOrders} from "../../store/actions";
 
-const Orders = (props) => {
+const Orders = ({fetchOrders,token, userId, ...props}) => {
     // let [orders, setOrders] = useState([]);
     // let [loading, setLoading] = useState(false);
-
     useEffect(() => {
         //setLoading(true);
-        props.fetchOrders(props.token, props.userId);
-    }, [])
+        fetchOrders(token, userId);
+    }, [fetchOrders, token, userId])
 
     let orderList;
     if (props.loading) {

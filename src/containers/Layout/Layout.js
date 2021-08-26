@@ -13,7 +13,7 @@ const Layout = (props) => {
         setShowSideDrawer(!showSideDrawer)
 
     }
-    
+
     return (
         <>
             <Toolbar drawerToggleClicked={switchSideDrawerHandler}/>

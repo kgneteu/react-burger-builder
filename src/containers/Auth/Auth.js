@@ -8,7 +8,7 @@ import {auth, setAuthRedirect} from "../../store/actions/index";
 import {Redirect} from "react-router";
 import checkValidity from "../../shared/utility";
 
-const Auth = (props) => {
+const Auth = ({building, ...props}) => {
     const initForm = {
         email: {
             elementType: 'input',
@@ -47,11 +47,11 @@ const Auth = (props) => {
 
     useEffect(() => {
 
-        let shouldResetRedirect =(!props.location.search)||(!props.building);
-        if ((shouldResetRedirect)&&(props.authRedirectPath !=='/')) {
+        let shouldResetRedirect = (!props.location.search) || (!building);
+        if ((shouldResetRedirect) && (props.authRedirectPath !== '/')) {
             props.onAuthSetRedirectPath('/');
         }
-    }, [props.location.search]);
+    }, [props, building]);
 
 
     if (props.userId) return <Redirect to={props.authRedirectPath}/>
