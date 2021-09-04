@@ -12,36 +12,14 @@ import * as burgerBuilderActions from "../../store/actions/";
 import {purchaseInit, setAuthRedirect} from "../../store/actions/";
 
 
-class BurgerBuilder extends Component {
+export class BurgerBuilder extends Component {
     state = {
-        //purchasable: false,
         purchasing: false,
-        // loading: false,
-        // error: false,
+
     }
 
     componentDidMount() {
 
-        // axios.get('/ingredients.json')
-        //     .then(response => {
-        //         if (response?.data) this.setState({ingredients: response.data})
-        //     }).catch(err => {
-        //     this.setState({error: true})
-        // })
-
-        //REDUX
-        //method 1 run async here
-        // axios.get('/ingredients.json')
-        //      .then(response => {
-        //          if (response?.data) {
-        //              //this.setState({ingredients: response.data})
-        //              this.props.onAddIngredients(response.data);
-        //          }
-        //      }).catch(err => {
-        //      this.setState({error: true})
-        //  })
-        //method 2
-        //see BurgerBuilder actions
         if (!this.props.building){
             this.props.onInitIngredients();
         }
@@ -62,20 +40,6 @@ class BurgerBuilder extends Component {
     }
 
     purchaseContinueHandler = () => {
-        // const queryParams = [];
-        // for (let i in this.props.ingredients) {
-        //     queryParams.push(
-        //         encodeURIComponent(i) + '=' + encodeURIComponent(this.props.ingredients[i])
-        //     )
-        // }
-        // queryParams.push('price=' + this.props.price)
-        // const queryString = '?' + queryParams.join('&')
-        // this.props.history.push({
-        //     pathname: '/checkout',
-        //     search: queryString,
-        // });
-        //redux now
-
         this.props.onInitPurchase();
         this.props.history.push({
             pathname: '/checkout',
@@ -83,41 +47,14 @@ class BurgerBuilder extends Component {
 
     }
 
-    // updatePurchaseState = () => {
-    //
-    //     const ingredientsTotal = Object.values({...this.props.ingredients})
-    //         .reduce((total, current, index, arr) => {
-    //             return total + current
-    //         });
-    //     this.setState({purchasable: ingredientsTotal > 0})
-    // }
 
     updatePurchaseState = () => {
         const ingredientsTotal = Object.values({...this.props.ingredients})
-            .reduce((total, current, index, arr) => {
+            .reduce((total, current) => {
                 return total + current
             });
         return (ingredientsTotal > 0)
     }
-    // addIngredientHandler = (type) => {
-    //     // const ingredients = {...this.props.ingredients};
-    //     //
-    //     // ingredients[type] = ingredients[type] + 1;
-    //     this.props.onIngredientAdded(type)
-    //     this.setState({ingredients}, () => this.updatePurchaseState())
-    //     this.setState({totalPrice: this.state.totalPrice + INGREDIENT_PRICES[type]}
-    //     )
-    //
-    // }
-    //
-    // removeIngredientHandler = (type) => {
-    //     const ingredients = {...this.state.ingredients};
-    //     if (ingredients[type] > 0) {
-    //         ingredients[type] = ingredients[type] - 1;
-    //         this.setState({ingredients}, () => this.updatePurchaseState())
-    //         this.setState({totalPrice: this.state.totalPrice - INGREDIENT_PRICES[type]})
-    //     }
-    // }
 
     render() {
         const disabledInfo = {...this.props.ingredients}
@@ -139,7 +76,7 @@ class BurgerBuilder extends Component {
         }
 
 
-        let burger = null;
+        let burger;
         if (!this.props.ingredients) {
             burger = this.props.error ? <p>Cannot load ingredients</p> : <Spinner/>
         } else {
@@ -158,8 +95,6 @@ class BurgerBuilder extends Component {
             )
         }
 
-        //disabledInfo.map(({_, amount}) => (amount > 0))
-        // console.log(disabledInfo)
 
         return (
             <Fragment>
@@ -172,20 +107,6 @@ class BurgerBuilder extends Component {
 
     }
 }
-
-
-// const mapDispatchToProps = (dispatch) => {
-//     return {
-//         onIngredientAdded: (ingredientName) => dispatch({
-//             type: actionTypes.ADD_INGREDIENT,
-//             ingredientName: ingredientName
-//         }),
-//         onIngredientRemoved: (ingredientName) => dispatch({
-//             type: actionTypes.REMOVE_INGREDIENT,
-//             ingredientName: ingredientName
-//         })
-//     }
-// }
 
 const mapStateToProps = (state) => {
     return {

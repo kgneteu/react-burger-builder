@@ -3,7 +3,7 @@ import classes from './NavigationItems.module.css'
 import NavigationItem from "./NavigationItem/NavigationItem";
 import {connect} from "react-redux";
 
-const NavigationItems = (props) => (
+export const NavigationItems = (props) => (
     <ul className={classes.NavigationItems}>
         <NavigationItem link={'/'}>Burger Builder</NavigationItem>
         {props.userId ?
@@ -21,4 +21,5 @@ const mapPropsToState = state => {
         userId: state.auth.userId,
     }
 }
+
 export default connect(mapPropsToState)(NavigationItems);
